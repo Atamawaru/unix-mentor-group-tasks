@@ -1,4 +1,4 @@
-#!/bin/bash env
+#!/bin/bash
 
 set -eou pipefail
 
@@ -14,7 +14,7 @@ argument="${argument%/}"
 date_to_append=$(date +%Y%m%d)
 for file in "$argument"/*; do
     old_file_name="${file##*/}"
-    if [[ -f "$old_file_name" && "$old_file_name" = *.txt ]]; then
+    if [[ -f "$file" && "$old_file_name" = *.txt ]]; then
         new_file_name="${date_to_append}_${old_file_name}"
         new_file_name="${argument%/}/${new_file_name}"
         mv "$file" "$new_file_name"
