@@ -60,4 +60,21 @@ target_dir=${non_flag_args[1]}
 
 if [[ -z $source_dir || -z $target_dir ]]; then
 	echo "Error. One of directory argument empty."
+	exit 1
 fi
+
+if ! [[ -d $source_dir ]]; then
+	echo "Error. Source directory does not exist."
+	exit 1
+fi
+
+if ! [[ -d $target_dir ]]; then
+	echo "Target directory does not exist. Created it."
+	mkdir "$target_dir"
+fi
+
+for file in "${source_dir%/}"/*; do
+	if [[ -f $file && "${file##*/}" = "$pattern" ]]; then
+		echo "aa"
+	fi
+done
