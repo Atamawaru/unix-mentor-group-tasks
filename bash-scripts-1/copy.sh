@@ -14,7 +14,8 @@ Flags:
         -h / --help             show usage and exit
 EOF
 }
-
+non_flag_args=()
+non_flag_count=0
 if [[ $# -eq 0 ]]; then
 	usage
 	exit 1
@@ -38,15 +39,25 @@ while [[ $# -gt 0 ]]; do
 		usage
 		exit 0
 		;;
+	-* | --*)
+		echo "Error. Unknown $1 command."
+		exit 1
+		;;
 	*)
-		if [[ -z $source_dir && "${1:0:1}" != "-" && -z $target_dir && "${2:0:1}" != "-" ]]; then
-			source_dir=$1
-			target_dir=$2
-			shift 2
-		else
-			echo "Error. Unknown $1 command."
-			exit 1
-		fi
+		non_flag_args[non_flag_count]=$1
+		((non_flag_count++))
+		shift 1
 		;;
 	esac
 done
+if [[ $non_flag_count -gt 2 ]]; then
+	echo "Error. Too many non-flag arguments."
+	exit 1
+fi
+
+source_dir=${non_flag_args[0]}
+target_dir=${non_flag_args[1]}
+
+if [[ -z $source_dir || -z $target_dir ]]; then
+	echo "Error. One of directory argument empty."
+fi
