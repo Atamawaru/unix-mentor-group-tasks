@@ -39,10 +39,18 @@ while [[ "$#" -gt 0 ]]; do
 		;;
 	esac
 done
-echo "Got processes: ${non_flag_args[*]}"
+REPORT=()
+report_count=0
 for process in "${non_flag_args[@]}"; do
-	output=""
-	if [[ $(pgrep "$process") != "" ]]; then
-		echo "yes"
+	output=$(echo -n $(pgrep "$process"))
+	if [[ "$output" != "" && $is_quiet = 0 ]]; then
+		echo "$output"
+		REPORT[report_count]="$output $process"
+		((report_count++))
+	elif [[ "$output" != "" && $is_quiet = 1 ]]; then
+		REPORT[report_count]="$output $process"
+		((report_count++))
 	fi
 done
+echo "STATUS REPORT: "
+echo "${REPORT[*]}"
