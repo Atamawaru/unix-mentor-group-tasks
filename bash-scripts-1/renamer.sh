@@ -13,7 +13,7 @@ fi
 print_int_error() {
     echo "Rename aborted on line $LINENO" >&2
 }
-trap print_int_error INT
+trap print_int_error ERR
 argument="${argument%/}"
 date_to_append=$(date +%Y%m%d)
 for file in "$argument"/*; do
