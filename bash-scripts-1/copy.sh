@@ -9,7 +9,7 @@ usage() {
 Usage: ./copy.sh (OPTIONS) <source_dir> <target_dir>
 
 Flags:
-        -p / --pattern <glob>	file pattern to match (default: *.log)
+        -p / --pattern "<glob>"	file pattern to match (default: *.log) (Note: double quote pattern to prevent immediate globbing)
         -v / --verbose	       	print each filename as it is copied
         -h / --help             show usage and exit
 EOF
@@ -20,15 +20,14 @@ if [[ $# -eq 0 ]]; then
 	usage
 	exit 1
 fi
-
-while [[ $# -gt 0 ]]; do
-	case $1 in
+while [[ "$#" -gt 0 ]]; do
+	case "$1" in
 	-p | --pattern)
 		if [[ -z $2 || "${2:0:1}" == "-" ]]; then
 			echo "Error. -p/--patern requires an argument."
 			exit 1
 		fi
-		pattern=$2
+		pattern="$2"
 		shift 2
 		;;
 	-v | --verbose)
@@ -44,9 +43,11 @@ while [[ $# -gt 0 ]]; do
 		exit 1
 		;;
 	*)
-		non_flag_args[non_flag_count]=$1
-		((non_flag_count++))
-		shift 1
+		if [[ "${1:0:1}" != "*" ]]; then
+			non_flag_args[non_flag_count]=$1
+			((non_flag_count++))
+			shift 1
+		fi
 		;;
 	esac
 done
@@ -72,9 +73,16 @@ if ! [[ -d $target_dir ]]; then
 	echo "Target directory does not exist. Created it."
 	mkdir "$target_dir"
 fi
-
+files_to_copy=""
 for file in "${source_dir%/}"/*; do
-	if [[ -f $file && "${file##*/}" = "$pattern" ]]; then
-		echo "aa"
+	if [[ -f $file && "${file##*/}" = $pattern ]]; then
+		files_to_copy="$files_to_copy${file} "
+		if [[ "$is_verbose" = 1 ]]; then
+			echo "Copied file: ${file##*/}"
+		fi
 	fi
 done
+cp $files_to_copy $target_dir
+read -ra fileCount <<<"$files_to_copy"
+echo "Copied files in total: ${#fileCount[@]}"
+exit 0
