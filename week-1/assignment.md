@@ -4,12 +4,14 @@ Write a script that accepts a filename as $1. If no argument is given, default t
 File: print its name (use parameter expansion to strip the path), size (du -h), and line count (wc -l)
 Directory: print how many files it contains
 Neither: (not a regular file, but for example a block device, char device) print an error to stderr and exit with code 1
+
 2. Safe renamer - rename.sh
 Rename all .txt files in a given directory by prepending today's date as YYYYMMDD_.
 
 Add set -euo pipefail at the top
 Add a trap that prints "Rename aborted on line $LINENO" to stderr on early exit
 Skip files already prefixed with a date - check if the filename starts with 8 digits
+
 3. Backup - copy.sh
 Copy files matching a glob pattern from a source directory to a destination directory. Takes two required positional arguments: <source_dir> and <dest_dir> - call usage() if either is missing.
 
