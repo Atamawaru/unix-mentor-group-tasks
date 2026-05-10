@@ -7,7 +7,7 @@ fi
 user_home_dir=$(eval echo "~$SUDO_USER")
 openssl_dir=$user_home_dir/opt/openssl
 openssl_source_repo="https://github.com/openssl/openssl.git"
-openssl_source_branch="OpenSSL_1_1_1-stable"
+openssl_source_branch="openssl-4.0"
 
 if ! [[ -d $openssl_dir ]]; then
     echo "$openssl_dir does not exist. Creating it."
@@ -52,11 +52,14 @@ fi
 echo "Installing OpenSSL source code..."
 git clone -b $openssl_source_branch --single-branch --depth=1 "$openssl_source_repo"
 echo "Compiling OpenSSL source code"
-cd ./openssl || return 1; ./config --prefix="$openssl_dir" --openssldir="$openssl_dir" -Wl,-rpath,"$openssl_dir/lib" 
+cd ./openssl || return 1; ./config -Wl,-rpath,"$openssl_dir/lib64" --prefix="$openssl_dir" --openssldir="$openssl_dir"
 cd ..
 make -C ./openssl -j"$(nproc)"
 make -C ./openssl test
 make -C ./openssl install
 echo "Openssl installed in $openssl_dir"
+echo "Making second version of lib folder, incase curl cant find it..."
+mkdir -p "$openssl_dir"/lib
+cp -r "$openssl_dir"/lib64/* "$openssl_dir"/lib
 "$openssl_dir"/bin/openssl version
 rm -rf openssl
