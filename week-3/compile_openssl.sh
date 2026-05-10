@@ -4,8 +4,11 @@ if [[ $(id -u) != 0 ]]; then
     echo "Error. Run $0 as root instead."
 fi
 
-openssl_dir="$HOME/opt/openssl"
-openssl_source_repo=""
+user_home_dir=$(eval echo "~$SUDO_USER")
+openssl_dir=$user_home_dir/opt/openssl
+openssl_source_repo="https://github.com/openssl/openssl.git"
+openssl_source_branch="OpenSSL_1_0_2-stable"
+
 if ! [[ -d $openssl_dir ]]; then
     echo "$openssl_dir does not exist. Creating it."
     mkdir -p "$openssl_dir"
@@ -47,4 +50,12 @@ else
 fi
 
 echo "Installing OpenSSL source code..."
-git clone 
+git clone -b $openssl_source_branch --single-branch --depth=1 "$openssl_source_repo"
+
+echo "Compiling OpenSSL source code"
+cd ./openssl || return 1; ./config --prefix="$openssl_dir" --openssldir="$openssl_dir"
+cd ..
+make -C ./openssl -j"$(nproc)"
+make -C ./openssl test
+make -C ./openssl install
+rm -rf openssl
