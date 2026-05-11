@@ -42,6 +42,15 @@ else
     echo "yes"
 fi
 
+echo -n "Checking perl... "
+if [[ $(perl -v > /dev/null 2>&1; echo $?) != 0 ]]; then
+    echo "no"
+    install_packages=$install_packages"perl "
+else
+    echo "yes"
+fi
+
+
 if [[ $install_packages != "" ]]; then
     echo "Packages to install: $install_packages"
     apt install "$install_packages" -y
