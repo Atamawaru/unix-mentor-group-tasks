@@ -2,6 +2,7 @@
 
 if [[ $(id -u) != 0 ]]; then
     echo "Error. Run $0 as root instead."
+    exit 1
 fi
 
 user_home_dir=$(eval echo "~$SUDO_USER")

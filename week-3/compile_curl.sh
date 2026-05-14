@@ -25,8 +25,8 @@ curl_build_tar_name=${curl_source_tarball##*/}
 tar -xf "$curl_build_tar_name"
 curl_build_dir_name=$(tar --list -f "$curl_build_tar_name" | head -1)
 rm "$curl_build_tar_name"
-cd "$curl_build_dir_name" || return 1 &&  ./configure LDFLAGS="-Wl,-rpath,$find_openssl_dir/lib64" --prefix="$curl_install_dir" --with-openssl="$find_openssl_dir" --without-libpsl
-cd ..
+cd "$curl_build_dir_name" || eval "$( echo "CD to build dir failed"; exit 1)" && ./configure LDFLAGS="-Wl,-rpath,$find_openssl_dir/lib64" --prefix="$curl_install_dir" --with-openssl="$find_openssl_dir" --without-libpsl
+cd .. || eval "$(echo "CD to git repo failed"; exit 1)"
 make -C ./"$curl_build_dir_name" -j"$(nproc)"
 make -C ./"$curl_build_dir_name" test
 make -C ./"$curl_build_dir_name" install
